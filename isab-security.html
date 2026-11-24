@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="uz"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0b1020"><title>ISAB Security</title>
+<style>
+:root{--bg:#0b1020;--card:rgba(255,255,255,.06);--bd:rgba(255,255,255,.1);--tx:#eef2ff;--mu:#8b95b5;--ac:#5b8cff;--ac2:#9b6bff;--ok:#2ee59d;--er:#ff5c7a}
+*{box-sizing:border-box;margin:0}
+body{font:16px system-ui,sans-serif;background:radial-gradient(900px 500px at 10% -10%,#1d2a5e,transparent),radial-gradient(700px 500px at 100% 0,#3a1d5e,transparent),var(--bg);color:var(--tx);min-height:100vh;padding:env(safe-area-inset-top) 14px 90px}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:20px;padding:16px;margin:12px 0;backdrop-filter:blur(14px)}
+h1{font-size:22px}h2{font-size:15px;color:var(--mu);margin-bottom:10px;font-weight:600}
+input,select{width:100%;padding:13px;margin:5px 0;border-radius:12px;border:1px solid var(--bd);background:rgba(0,0,0,.3);color:var(--tx);font-size:16px}
+button{padding:12px 16px;border:0;border-radius:12px;font-weight:600;font-size:15px;color:#fff;background:linear-gradient(135deg,var(--ac),var(--ac2));cursor:pointer}
+button.g{background:var(--card);border:1px solid var(--bd)}button.r{background:var(--er)}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}.row>*{flex:1}
+.st{font-size:13px;margin-top:6px;min-height:18px;color:var(--mu)}.ok{color:var(--ok)}.er{color:var(--er)}
+#gate{position:fixed;inset:0;z-index:9;display:flex;align-items:center;justify-content:center;padding:20px;background:var(--bg)}
+#gate .card{width:100%;max-width:360px;text-align:center}
+.logo{width:64px;height:64px;border-radius:18px;margin:0 auto 12px;background:linear-gradient(135deg,var(--ac),var(--ac2));display:grid;place-items:center;font-size:30px}
+.vid{position:relative;border-radius:16px;overflow:hidden;background:#000;aspect-ratio:4/3}
+.vid video,.vid img{width:100%;height:100%;object-fit:cover}
+.dot{position:absolute;top:10px;left:10px;padding:4px 10px;border-radius:20px;background:rgba(0,0,0,.6);font-size:12px}
+nav{position:fixed;bottom:0;left:0;right:0;display:flex;gap:4px;padding:8px 10px calc(8px + env(safe-area-inset-bottom));background:rgba(11,16,32,.9);backdrop-filter:blur(16px);border-top:1px solid var(--bd)}
+nav button{flex:1;background:none;color:var(--mu);padding:8px 2px;font-size:12px}nav button.on{color:#fff;background:var(--card)}
+.sw{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--bd)}
+.sw:last-child{border:0}.sw input{width:auto;transform:scale(1.4)}
+.ev{padding:10px 0;border-bottom:1px solid var(--bd);font-size:14px}.ev small{color:var(--mu);display:block}
+.hide{display:none}
+</style></head><body>
+
+<div id="gate"><div class="card">
+<div class="logo">🛡️</div><h1>ISAB Security</h1>
+<p class="st">Birinchi kirish — yaratuvchi tasdig‘i</p>
+<input id="u" placeholder="Kod admin" autocomplete="off" autocapitalize="off">
+<input id="p" type="password" placeholder="Parol">
+<button style="width:100%;margin-top:8px" onclick="login()">Kirish</button>
+<div class="st er" id="ge"></div></div></div>
+
+<div id="app" class="hide">
+<div class="row" style="margin-top:14px"><h1>🛡️ ISAB Security</h1><span id="state" class="st" style="text-align:right">○ O‘chiq</span></div>
+
+<section id="t-home">
+<div class="card"><div class="vid"><video id="v" playsinline muted></video><img id="ip" class="hide"><span class="dot" id="dot">● Kutilmoqda</span></div>
+<div class="row" style="margin-top:10px"><button id="go" onclick="toggle()">▶ Nazoratni boshlash</button><button class="g" onclick="shot()">📸 Rasm</button></div>
+<div class="st" id="hs"></div></div>
+<div class="card"><h2>Manba</h2>
+<select id="src" onchange="save()"><option value="phone">📱 Telefon kamerasi</option><option value="ip">📡 IP kamera</option></select>
+<div class="row"><button class="g" onclick="testPhone()">Telefon kamerasini tekshirish</button></div><div class="st" id="s1"></div></div>
+<div class="card"><h2>Bugungi hodisalar</h2><div id="cnt" class="st"></div></div>
+</section>
+
+<section id="t-set" class="hide">
+<div class="card"><h2>🤖 Telegram bot</h2>
+<input id="tok" placeholder="Bot token (123456:ABC...)" onchange="save()">
+<input id="cid" placeholder="Chat ID" onchange="save()">
+<button onclick="testTg()" style="width:100%">Tekshirish (sinov xabari)</button><div class="st" id="s2"></div></div>
+<div class="card"><h2>📡 IP kamera</h2>
+<input id="ipu" placeholder="Snapshot URL: http://192.168.1.10/snapshot.jpg" onchange="save()">
+<button onclick="testIp()" style="width:100%">Kamerani tekshirish</button><div class="st" id="s3"></div></div>
+<div class="card"><h2>⚙️ Funksiyalar</h2>
+<label class="sw">🎬 Harakat — video Telegramga<input type="checkbox" id="fv" onchange="save()"></label>
+<label class="sw">🔊 Baland tovush (shovqin) signali<input type="checkbox" id="fa" onchange="save()"></label>
+<label class="sw">👥 Odam sanash (taxminiy)<input type="checkbox" id="fp" onchange="save()"></label>
+<label class="sw">🕘 Kamera orqali davomat (keldi-ketdi)<input type="checkbox" id="fk" onchange="save()"></label>
+<label class="sw">🌙 Ekranni yoqiq saqlash<input type="checkbox" id="fw" onchange="save()"></label>
+<h2 style="margin-top:12px">Sezgirlik</h2><input type="range" id="sens" min="1" max="10" onchange="save()">
+</div>
+<button class="g" style="width:100%" onclick="logout()">Yaratuvchi kirishini qayta so‘rash</button>
+</section>
+
+<section id="t-log" class="hide"><div class="card"><input id="q" placeholder="🔎 Qidirish: kecha kim keldi?" oninput="renderLog()"><div id="log"></div>
+<button class="g" onclick="clr()" style="margin-top:8px;width:100%">Tozalash</button></div></section>
+
+<nav><button class="on" onclick="tab('home',this)">🏠<br>Asosiy</button><button onclick="tab('set',this)">⚙️<br>Sozlama</button><button onclick="tab('log',this)">🗂<br>Arxiv</button></nav>
+</div>
+
+<canvas id="c" class="hide"></canvas>
+<script>
+const H="0483921c9d5a28b0671d581a463abd3d8f0c507cd88d66d66350677a3d430a66";
+const $=i=>document.getElementById(i);
+const ld=(k,d)=>{try{return JSON.parse(localStorage.getItem(k))??d}catch(e){return d}};
+const sv=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}};
+let S=ld('isab_s',{src:'phone',tok:'',cid:'',fv:true,fa:true,fp:false,fk:false,fw:true,sens:5});
+let LOG=ld('isab_log',[]),run=false,stream=null,prev=null,last=0,rec=null,wl=null,actx,an,timer,ipBusy=false;
+
+function sha256(s){
+ const r=(n,x)=>(x>>>n)|(x<<(32-n));
+ const K=[],h=[];let p=0,c={};
+ for(let n=2;p<64;n++){if(!c[n]){for(let i=0;i<313;i+=n)c[i]=n;h[p]=(Math.pow(n,.5)*4294967296)|0;K[p++]=(Math.pow(n,1/3)*4294967296)|0}}
+ h.length=8;
+ const b=unescape(encodeURIComponent(s));const l=b.length*8;const w=[];
+ for(let i=0;i<b.length;i++)w[i>>2]|=b.charCodeAt(i)<<(24-(i%4)*8);
+ w[b.length>>2]|=0x80<<(24-(b.length%4)*8);
+ const len=((b.length+8>>6)+1)*16;w[len-1]=l;
+ for(let j=0;j<len;j+=16){const a=w.slice(j,j+16),o=h.slice(0);
+  for(let i=0;i<64;i++){
+   if(i>=16){const a15=a[i-15]|0,a2=a[i-2]|0;
+    a[i]=(a[i-16]|0)+(r(7,a15)^r(18,a15)^(a15>>>3))+(a[i-7]|0)+(r(17,a2)^r(19,a2)^(a2>>>10))|0}
+   const e=o[4],A=o[0];
+   const t1=(o[7]+(r(6,e)^r(11,e)^r(25,e))+((e&o[5])^(~e&o[6]))+K[i]+(a[i]|0))|0;
+   const t2=((r(2,A)^r(13,A)^r(22,A))+((A&o[1])^(A&o[2])^(o[1]&o[2])))|0;
+   o.unshift((t1+t2)|0);o[4]=(o[4]+t1)|0;o.pop()}
+  for(let i=0;i<8;i++)h[i]=(h[i]+o[i])|0}
+ return h.map(x=>(x>>>0).toString(16).padStart(8,'0')).join('')}
+async function sha(s){return sha256(s)}
+let MEM=0;
+async function login(){
+ const h=await sha($('u').value.trim()+':'+$('p').value.trim());
+ if(h===H){sv('isab_auth',1);enter()}else $('ge').textContent='Kod yoki parol noto‘g‘ri';}
+function enter(){$('gate').classList.add('hide');$('app').classList.remove('hide');init();}
+function logout(){localStorage.removeItem('isab_auth');location.reload()}
+if(ld('isab_auth',0)===1)enter();
+
+function init(){
+ for(const k of ['tok','cid','sens','src'])$(k==='src'?'src':k).value=S[k];
+ $('ipu').value=S.ip||'';
+ for(const k of ['fv','fa','fp','fk','fw'])$(k).checked=S[k];
+ renderLog();
+ if(ld('isab_run',false))toggle(); // chiqib kirganda avtomatik davom
+}
+function save(){
+ Object.assign(S,{src:$('src').value,tok:$('tok').value.trim(),cid:$('cid').value.trim(),ip:$('ipu').value.trim(),sens:+$('sens').value});
+ for(const k of ['fv','fa','fp','fk','fw'])S[k]=$(k).checked;
+ sv('isab_s',S);}
+function tab(n,b){for(const x of ['home','set','log'])$('t-'+x).classList.toggle('hide',x!==n);
+ document.querySelectorAll('nav button').forEach(x=>x.classList.remove('on'));b.classList.add('on')}
+const msg=(id,t,c)=>{$(id).textContent=t;$(id).className='st '+(c||'')};
+
+// ---- Telegram
+const API=m=>`https://api.telegram.org/bot${S.tok}/${m}`;
+async function testTg(){save();msg('s2','Tekshirilmoqda...');
+ try{const a=await(await fetch(API('getMe'))).json();if(!a.ok)throw 0;
+  const b=await(await fetch(API('sendMessage'),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({chat_id:S.cid,text:'✅ ISAB Security ulandi'})})).json();
+  b.ok?msg('s2','✅ Ulandi: @'+a.result.username,'ok'):msg('s2','❌ Chat ID noto‘g‘ri (botga /start yozing)','er')}
+ catch(e){msg('s2','❌ Token noto‘g‘ri yoki internet yo‘q','er')}}
+async function tgSend(kind,blob,cap){
+ if(!S.tok||!S.cid)return;const f=new FormData();f.append('chat_id',S.cid);f.append('caption',cap);
+ f.append(kind==='photo'?'photo':'video',blob,kind==='photo'?'a.jpg':'a.webm');
+ try{await fetch(API(kind==='photo'?'sendPhoto':'sendVideo'),{method:'POST',body:f})}catch(e){}}
+const tgText=t=>S.tok&&S.cid&&fetch(API('sendMessage'),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({chat_id:S.cid,text:t})}).catch(()=>{});
+
+// ---- Kamera
+async function startPhone(){
+ stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment',width:640,height:480},audio:S.fa||S.fv});
+ const v=$('v');v.srcObject=stream;v.classList.remove('hide');$('ip').classList.add('hide');await v.play();
+ if(S.fa){actx=new(window.AudioContext||webkitAudioContext)();const s=actx.createMediaStreamSource(stream);an=actx.createAnalyser();an.fftSize=512;s.connect(an)}}
+async function testPhone(){msg('s1','Tekshirilmoqda...');
+ try{const s=await navigator.mediaDevices.getUserMedia({video:true});const v=$('v');v.srcObject=s;v.classList.remove('hide');$('ip').classList.add('hide');await v.play();
+  msg('s1','✅ Telefon kamerasi ishlayapti','ok');setTimeout(()=>{if(!run){s.getTracks().forEach(t=>t.stop())}},4000)}
+ catch(e){msg('s1','❌ Kamera ruxsati berilmadi','er')}}
+async function ipFrame(){const r=await fetch(S.ip+(S.ip.includes('?')?'&':'?')+'t='+Date.now(),{cache:'no-store'});if(!r.ok)throw 0;return await r.blob()}
+async function testIp(){save();msg('s3','Tekshirilmoqda...');
+ try{const b=await ipFrame();$('ip').src=URL.createObjectURL(b);msg('s3','✅ IP kamera ishlayapti','ok')}
+ catch(e){const i=new Image();i.onload=()=>msg('s3','⚠️ Kamera ko‘rinadi, lekin tahlil uchun CORS yoqilmagan','er');
+  i.onerror=()=>msg('s3','❌ Ulanib bo‘lmadi (URL, tarmoq yoki https/http)','er');i.src=S.ip+'?t='+Date.now()}}
+
+async function toggle(){
+ if(run){stop();return}
+ save();try{
+  if(S.src==='phone')await startPhone();else{$('v').classList.add('hide');$('ip').classList.remove('hide')}
+  run=true;sv('isab_run',true);prev=null;$('go').textContent='⏹ To‘xtatish';$('go').classList.add('r');
+  $('state').textContent='● Faol';$('state').className='st ok';
+  if(S.fw&&navigator.wakeLock)try{wl=await navigator.wakeLock.request('screen')}catch(e){}
+  timer=setInterval(tick,700);
+ }catch(e){msg('hs','❌ Boshlab bo‘lmadi: '+(e.message||e),'er')}}
+function stop(){run=false;sv('isab_run',false);clearInterval(timer);stream&&stream.getTracks().forEach(t=>t.stop());
+ wl&&wl.release();$('go').textContent='▶ Nazoratni boshlash';$('go').classList.remove('r');$('state').textContent='○ O‘chiq';$('state').className='st'}
+document.addEventListener('visibilitychange',async()=>{if(run&&!document.hidden&&S.fw&&navigator.wakeLock)try{wl=await navigator.wakeLock.request('screen')}catch(e){}});
+
+async function frame(){
+ const c=$('c'),x=c.getContext('2d',{willReadFrequently:true});c.width=160;c.height=120;
+ if(S.src==='phone')x.drawImage($('v'),0,0,160,120);
+ else{if(ipBusy)return null;ipBusy=true;try{const b=await ipFrame();const bm=await createImageBitmap(b);x.drawImage(bm,0,0,160,120);$('ip').src=URL.createObjectURL(b)}catch(e){ipBusy=false;return null}ipBusy=false}
+ return x.getImageData(0,0,160,120).data}
+async function tick(){
+ const d=await frame();if(!d)return;
+ if(prev){let n=0;for(let i=0;i<d.length;i+=16)if(Math.abs(d[i]-prev[i])+Math.abs(d[i+1]-prev[i+1])>60)n++;
+  const th=(11-S.sens)*18;$('dot').textContent=n>th?'● HARAKAT':'● Kuzatilmoqda';
+  if(n>th)event('motion','Harakat aniqlandi')}
+ prev=d;
+ if(an){const a=new Uint8Array(an.fftSize);an.getByteTimeDomainData(a);let m=0;a.forEach(v=>m=Math.max(m,Math.abs(v-128)));
+  if(m>(11-S.sens)*9+30)event('sound','Baland tovush aniqlandi')}}
+async function event(type,text){
+ const now=Date.now();if(now-last<15000)return;last=now;
+ add(type,text);const cap='🚨 '+text+' — '+new Date().toLocaleString('uz');
+ $('c').width=640;$('c').height=480;
+ if(S.src==='phone'){$('c').getContext('2d').drawImage($('v'),0,0,640,480);
+  $('c').toBlob(b=>tgSend('photo',b,cap),'image/jpeg',.8);
+  if(S.fv&&stream&&window.MediaRecorder&&!rec){const ch=[];rec=new MediaRecorder(stream);rec.ondataavailable=e=>ch.push(e.data);
+   rec.onstop=()=>{tgSend('video',new Blob(ch,{type:'video/webm'}),cap);rec=null};rec.start();setTimeout(()=>rec&&rec.state==='recording'&&rec.stop(),6000)}}
+ else try{tgSend('photo',await ipFrame(),cap)}catch(e){}}
+function shot(){if(S.src==='phone'&&run){$('c').width=640;$('c').height=480;$('c').getContext('2d').drawImage($('v'),0,0,640,480);$('c').toBlob(b=>{tgSend('photo',b,'📸 Qo‘lda rasm');msg('hs','Yuborildi','ok')},'image/jpeg',.8)}else msg('hs','Avval nazoratni boshlang','er')}
+
+// ---- Arxiv
+function add(t,x){LOG.unshift({t,x,d:new Date().toLocaleString('uz'),ts:Date.now()});LOG=LOG.slice(0,300);sv('isab_log',LOG);renderLog()}
+function renderLog(){const q=$('q')?$('q').value.toLowerCase():'';
+ $('log').innerHTML=LOG.filter(e=>(e.x+e.d).toLowerCase().includes(q)).map(e=>`<div class="ev">${e.t==='sound'?'🔊':'🎬'} ${e.x}<small>${e.d}</small></div>`).join('')||'<div class="st">Hodisa yo‘q</div>';
+ const td=LOG.filter(e=>Date.now()-e.ts<864e5).length;$('cnt').textContent='So‘nggi 24 soatda: '+td+' ta hodisa'}
+function clr(){LOG=[];sv('isab_log',LOG);renderLog()}
+</script></body></html>
